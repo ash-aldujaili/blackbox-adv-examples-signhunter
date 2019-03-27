@@ -1,0 +1,29 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_dir": "mnist_models/models/natural",
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "mnist",
+  "dset_config": {},
+  "_comment": "===== TRAINING CONFIGURATION =====",
+  "random_seed": 4557077,
+  "max_num_training_steps": 100000,
+  "num_output_steps": 100,
+  "num_summary_steps": 100,
+  "num_checkpoint_steps": 300,
+  "training_batch_size": 50,
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 100,
+  "eval_batch_size": 50,
+  "eval_on_cpu": false,
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "attack_name": "LinfPGDAttack",
+  "attack_config": {
+    "epsilon": 0.3,
+    "num_steps": 40,
+    "step_size": 0.01,
+    "random_start": true,
+    "loss_func": "xent"
+  },
+  "store_adv_path": "attack.npy",
+  "device": "/gpu:1"
+}

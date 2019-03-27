@@ -1,0 +1,28 @@
+{
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "model_dir": "mnist_models/models/natural",
+  "dset_name": "mnist",
+  "dset_config": {},
+  "random_seed": 4557077,
+  "max_num_training_steps": 100000,
+  "num_output_steps": 100,
+  "num_summary_steps": 100,
+  "num_checkpoint_steps": 300,
+  "training_batch_size": 50,
+  "num_eval_examples": 1000,
+  "eval_batch_size": 200,
+  "eval_on_cpu": false,
+  "attack_name": "LinfTopKAttack",
+  "attack_config": {
+    "epsilon": 3,
+    "num_steps": 1,
+    "step_size": 3,
+    "random_start": false,
+    "loss_func": "xent",
+    "crit": "top",
+    "retain_p": 1.0,
+    "p": "2"
+  },
+  "store_adv_path": "attack.npy",
+  "device": "/gpu:1"
+}

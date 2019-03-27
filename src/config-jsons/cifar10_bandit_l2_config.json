@@ -1,0 +1,24 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_dir": "cifar10_models/models/naturally_trained",
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "cifar10",
+  "dset_config": {},
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 1000,
+  "eval_batch_size": 100,
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "attack_name": "BanditAttack",
+  "attack_config": {
+    "epsilon": 127,
+    "p": "2",
+    "lr": 12,
+    "fd_eta": 2.55,
+    "prior_lr": 0.00001,
+    "prior_size": 20,
+    "data_size": 32,
+    "prior_exploration": 0.1,
+    "max_loss_queries": 10000
+  },
+  "device": "/gpu:1"
+}

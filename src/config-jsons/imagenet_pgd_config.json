@@ -1,0 +1,31 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_file": "imagenet_models/inception_v3.ckpt",
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "imagenet",
+  "dset_config": {
+    "data_dir": "/home/aldujail/imagenet/tf_val_set"
+  },
+  "_comment": "===== TRAINING CONFIGURATION =====",
+  "random_seed": 4557077,
+  "max_num_training_steps": 100000,
+  "num_output_steps": 100,
+  "num_summary_steps": 100,
+  "num_checkpoint_steps": 300,
+  "training_batch_size": 50,
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 50000,
+  "eval_batch_size": 100,
+  "eval_on_cpu": false,
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "attack_name": "LinfPGDAttack",
+  "attack_config": {
+    "epsilon": 0.05,
+    "num_steps": 40,
+    "step_size": 0.005,
+    "random_start": true,
+    "loss_func": "xent"
+  },
+  "store_adv_path": "attack.npy",
+  "device": "/gpu:1"
+}

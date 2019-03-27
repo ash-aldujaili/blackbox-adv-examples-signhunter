@@ -1,0 +1,23 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_file": "imagenet_models/inception_v3.ckpt",
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "imagenet",
+  "dset_config": {
+    "data_dir": "/home/aldujail/imagenet/tf_val_set"
+  },
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 1000,
+  "eval_batch_size": 40,
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "attack_name": "NESAttack",
+  "attack_config": {
+    "epsilon": 5.0,
+    "p": "2",
+    "fd_eta": 0.1,
+    "lr": 2.0,
+    "q": 50,
+    "max_loss_queries": 10000
+  },
+  "device": "/gpu:1"
+}

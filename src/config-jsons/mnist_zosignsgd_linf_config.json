@@ -1,0 +1,18 @@
+{
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "model_dir": "mnist_models/models/natural",
+  "dset_name": "mnist",
+  "dset_config": {},
+  "num_eval_examples": 10000,
+  "eval_batch_size": 200,
+  "attack_name": "ZOSignSGDAttack",
+  "attack_config": {
+    "epsilon": 0.3,
+    "p": "inf",
+    "fd_eta": 0.1,
+    "lr": 0.1,
+    "q": 10,
+    "max_loss_queries": 10000
+  },
+  "device": "/gpu:1"
+}

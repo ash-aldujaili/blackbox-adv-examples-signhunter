@@ -1,0 +1,45 @@
+{
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "model_dir": "cifar10_models/models/naturally_trained",
+  "dset_name": "cifar10",
+  "dset_config": {},
+  "tf_random_seed": 451760341,
+  "np_random_seed": 216105420,
+  "max_num_training_steps": 80000,
+  "num_output_steps": 100,
+  "num_summary_steps": 100,
+  "num_checkpoint_steps": 1000,
+  "training_batch_size": 128,
+  "step_size_schedule": [
+    [
+      0,
+      0.1
+    ],
+    [
+      40000,
+      0.01
+    ],
+    [
+      60000,
+      0.001
+    ]
+  ],
+  "weight_decay": 0.0002,
+  "momentum": 0.9,
+  "num_eval_examples": 1000,
+  "eval_batch_size": 100,
+  "eval_on_cpu": false,
+  "attack_name": "LinfTopKAttack",
+  "attack_config": {
+    "epsilon": 127,
+    "num_steps": 1,
+    "step_size": 127,
+    "random_start": false,
+    "loss_func": "xent",
+    "crit": "random",
+    "retain_p": 0.8,
+    "p": "2"
+  },
+  "store_adv_path": "attack.npy",
+  "device": "/gpu:1"
+}
