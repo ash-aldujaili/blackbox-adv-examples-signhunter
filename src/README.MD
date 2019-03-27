@@ -53,7 +53,18 @@ python ./experiments/keep_k_sign_exp.py
 python signhunter_4_cont_opt.py
 ```
 
-#### D. Rest of the Paper/Supplement Experiments
+#### D. To run the Challenges experiment (Section 6)
+
+checkout to the `challenges` branch
+
+```
+git checkout challenges
+git pull
+```
+
+I've put these on a branch since the same code and config files used in main experiments are modified to generate files in the format required by the challenges.
+
+#### E. Rest of the Paper/Supplement Experiments
 
 `cd` to `src/notebooks`
 
@@ -62,6 +73,8 @@ jupyter notebook
 ```
 
 And go through the cells of `approx-hamming-search.ipynb`
+
+
 
 
 ### Other Utilities
@@ -110,14 +123,7 @@ TeX files will be generated in `data/blacbox_attack_exp`
 
 ---
 
-To run the experiments of Section 6, checkout to the `challenges` branch
 
-```
-git checkout challenges
-git pull
-```
-
-I've put these on a branch since the same code and config files used in main experiments are modified to generate files in the format required by the challenges.
 
 
 
