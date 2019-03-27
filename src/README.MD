@@ -33,7 +33,7 @@ For IMAGENET, please download the imagenet validation set and make sure the folo
 
 #### A. To run black-box attack experiments:
 
-After modifying the attacks config files in `config-jsons` as desired; include config files of the considered attacks in `attacks/blackbox/run_attack.py`'s main function. Make sure that the `IS_DEBUG_MODE` is set to False. This Flag is used to replace the repsective model's loss with the synthetic concave one discussed in Appendix B in the supplement.
+After modifying the attacks config files in `config-jsons` as desired; include config files of the considered attacks in `attacks/blackbox/run_attack.py`'s main function. Make sure that the `IS_DEBUG_MODE` is set to False. This Flag is used to replace the repsective model's loss with the synthetic concave one discussed in Appendix D in the supplement.
 
 ```
 python run_attack.py
@@ -66,7 +66,7 @@ And go through the cells of `approx-hamming-search.ipynb`
 
 ### Other Utilities
 
-To generate algorithms' hyperparameter tables (Appendix B):
+To generate algorithms' hyperparameter tables (Appendix D):
 
 ```
 # to export parameter table of algorithms
@@ -91,7 +91,7 @@ To generate plots/tables from `attacks/blackbox/run_attack.py`
 
 `run_attack.py` will store results into both `h5` file (logging progress of the algorithms) as well as a json (logging the final status of the algorithms)
 
-To generate plots (e.g., Figures in Appdendix D) from data stored in the resulting `h5` file
+To generate plots (e.g., Figures in Appdendix E) from data stored in the resulting `h5` file
 
 ```
 utils.plt_fcts.plt_from_h5tbl(['../../data/blackbox_attack_exp/{H5_FILE_NAME}.h5'])
@@ -101,12 +101,23 @@ Plots will be generated in `data/blackbox_attack_exp/{H5_FILE_NAME}_plots`
 
 ---
 
-To generate summary of attack latex tables (e.g., Tables in Appdendix D) from the resulting `json` file
+To generate summary of attack latex tables (e.g., Tables in Appdendix E) from the resulting `json` file
 ```
 utils.latex_fcts.res_json_2_tbl_latex('../../data/blackbox_attack_exp/{JSON_FILE_NAME}.json')
 ```
 
 TeX files will be generated in `data/blacbox_attack_exp`
+
+---
+
+To run the experiments of Section 6, checkout to the `challenges` branch
+
+```
+git checkout challenges
+git pull
+```
+
+I've put these on a branch since the same code and config files used in main experiments are modified to generate files in the format required by the challenges.
 
 
 
