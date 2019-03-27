@@ -33,11 +33,13 @@ For IMAGENET, please download the imagenet validation set and make sure the folo
 
 #### A. To run black-box attack experiments:
 
-After modifying the attacks config files in `config-jsons` as desired; include config files of the considered attacks in `attacks/blackbox/run_attack.py`'s main function. Make sure that the `IS_DEBUG_MODE` is set to False. This Flag is used to replace the repsective model's loss with the synthetic concave one discussed in Appendix D in the supplement.
+After modifying the attacks config files in `config-jsons` as desired; include config files of the considered attacks in `attacks/blackbox/run_attack.py`'s main function (line 40 in `run_attack.py`). Make sure that the `IS_DEBUG_MODE` is set to False. This Flag is used to replace the repsective model's loss with the synthetic concave one discussed in Appendix D in the supplement.
 
 ```
 python run_attack.py
 ```
+
+If you run different experiments, you may want to change the `exp_id` string (line 38 in `run_attack.py`), this will be prepended the results files generated, so you won't overwrite results from different experiments
 
 #### B. To run Keep K experiment
 
