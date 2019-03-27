@@ -8,14 +8,13 @@ from __future__ import print_function
 import numpy as np
 import torch as ch
 from torch import Tensor as t
-
 from utils.compute_fcts import l2_proj_maker, linf_proj_maker
 
 
 class BlackBoxAttack(object):
     def __init__(self, max_loss_queries=np.inf,
-                 max_crit_queries=np.inf,
-                 epsilon=0.5, p='inf', lb=0., ub=1.):
+                       max_crit_queries=np.inf,
+                       epsilon=0.5, p='inf', lb=0., ub=1.):
         """
         :param max_loss_queries: max number of calls to model per data point
         :param max_crit_queries: max number of calls to early stopping criterion  per data poinr
@@ -118,17 +117,17 @@ class BlackBoxAttack(object):
 
         # list of logs to be returned
         logs_dict = {
-            'total_loss': [],
-            'total_cos_sim': [],
-            'total_ham_sim': [],
-            'total_successes': [],
-            'total_failures': [],
-            'iteration': [],
-            'total_loss_queries': [],
-            'total_crit_queries': [],
-            'num_loss_queries_per_iteration': [],
-            'num_crit_queries_per_iteration': []
-        }
+                'total_loss': [],
+                'total_cos_sim': [],
+                'total_ham_sim': [],
+                'total_successes': [],
+                'total_failures': [],
+                'iteration': [],
+                'total_loss_queries': [],
+                'total_crit_queries': [],
+                'num_loss_queries_per_iteration': [],
+                'num_crit_queries_per_iteration': []
+            }
 
         # ignore this batch of xs if all are misclassified
         if sum(correct_classified_mask) == 0:
@@ -168,7 +167,7 @@ class BlackBoxAttack(object):
             # project around xs and within pixel range and
             # replace xs only if not done
             xs_t = self.proj_replace(xs_t, sugg_xs_t, t(dones_mask.reshape(-1, *[1] * num_axes).astype(np.float32)))
-            # print(np.linalg.norm(xs_t.view(xs_t.shape[0], -1).cpu(), axis=1))
+            #print(np.linalg.norm(xs_t.view(xs_t.shape[0], -1).cpu(), axis=1))
             # update number of queries (note this is done before updating dones_mask)
             num_loss_queries += num_loss_queries_per_step * (1. - dones_mask)
             num_crit_queries += (1. - dones_mask)
@@ -203,4 +202,7 @@ class BlackBoxAttack(object):
         # set self._proj to None to ensure it is intended use
         self._proj = None
 
-        return logs_dict
+        return xs_t.cpu().numpy(), logs_dict
+
+
+
