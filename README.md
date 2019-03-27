@@ -1,4 +1,5 @@
-# blackbox-adv-examples-signhunter
+# Flipping Sign Bits is All You Need to Craft Black-Box Adversarial Examples
+
 A repository for the query-efficient black-box attack, SignHunter: **[There are No Bit Parts for Sign Bits in Black-Box Attacks](https://arxiv.org/abs/1902.06894v1)** by Abdullah Al-Dujaili and Una-May O'Reilly, 2019
 
 
@@ -20,7 +21,7 @@ Refer to the directories above for code & data setups.
 
 Also, the repository has two branches:
 - `master`: contains the code for the main experiments in the paper.
-- `chanllenges`: for experiments of Section 6.
+- `chanllenges`: for experiments of Section 6. 
 
 ### More Resources:
 
