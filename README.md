@@ -1,12 +1,13 @@
 # blackbox-adv-examples-signhunter
-A repository for the query-efficient black-box attack, SignHunter 
+A repository for the query-efficient black-box attack, SignHunter: **[There are No Bit Parts for Sign Bits in Black-Box Attacks](https://arxiv.org/abs/1902.06894v1)** by Abdullah Al-Dujaili and Una-May O'Reilly, 2019
+
 
 Highlights of the attack:
 - 100% evasion rate on 10K MNIST images using 12 queries on average!
 - 90% evasion rate against Ensemble Adv. trained model for IMANGENET with 1000 queries!
-- Theoretical Guarantees to perform at least as well as FGSM after 2^(log(n)+1) queries.
-
-Code repository for the paper **[There are No Bit Parts for Sign Bits in Black-Box Attacks](https://arxiv.org/abs/1902.06894v1)** by Abdullah Al-Dujaili and Una-May O'Reilly, 2019
+- 2.5x fewer queries and 3.8x less failure-prone that SOTAs combined on MNIST, CIFAR10, & IMAGENET.
+- Theoretically guaranteed to perform at least as well as FGSM after 2^(log(n)+1) queries.
+- Surpass all the transfer-only zero-query attacks on Madry's Lab's challenges and is comparable with PGD using the same number of iterations with the difference that PGD uses X backprops, while SignHunter uses X forwards.
 
 The repository is of the following structure:
 - `src/`: contains the code for reproducing our work.
