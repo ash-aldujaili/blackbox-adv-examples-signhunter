@@ -30,6 +30,12 @@ from utils.helper_fcts import config_path_join, data_path_join, \
 from utils.latex_fcts import res_json_2_tbl_latex
 from utils.plt_fcts import plt_from_h5tbl
 
+from attacks.blackbox.nes_attack import NESAttack
+from attacks.blackbox.cheat_attack import CheatAttack
+from attacks.blackbox.bandit_attack import BanditAttack
+from attacks.blackbox.zo_sign_sgd_attack import ZOSignSGDAttack
+from attacks.blackbox.sign_attack import SignAttack
+
 # to run the attacks on a quadratic function with no constraint
 # i.e. a concave fct with a single global solution
 IS_DEBUG_MODE = True
