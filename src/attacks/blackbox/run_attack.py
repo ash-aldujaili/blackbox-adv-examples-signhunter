@@ -35,39 +35,41 @@ from attacks.blackbox.cheat_attack import CheatAttack
 from attacks.blackbox.bandit_attack import BanditAttack
 from attacks.blackbox.zo_sign_sgd_attack import ZOSignSGDAttack
 from attacks.blackbox.sign_attack import SignAttack
+from attacks.blackbox.random_attack import RandAttack
 
 # to run the attacks on a quadratic function with no constraint
 # i.e. a concave fct with a single global solution
-IS_DEBUG_MODE = True
+IS_DEBUG_MODE = False
 
 if __name__ == '__main__':
-    exp_id = 'tune'
+    exp_id = 'rand_mnist'
     print("Running Experiment {} with DEBUG MODE {}".format(exp_id, IS_DEBUG_MODE))
     cfs = [
-        'mnist_zosignsgd_linf_config.json',
-        'mnist_nes_linf_config.json',
-        'mnist_sign_linf_config.json',
-        'mnist_bandit_linf_config.json',
-        'mnist_zosignsgd_l2_config.json',
-        'mnist_nes_l2_config.json',
-        'mnist_sign_l2_config.json',
-        'mnist_bandit_l2_config.json',
-        'cifar10_zosignsgd_linf_config.json',
-        'cifar10_nes_linf_config.json',
-        'cifar10_sign_linf_config.json',
-        'cifar10_bandit_linf_config.json',
-        'cifar10_zosignsgd_l2_config.json',
-        'cifar10_nes_l2_config.json',
-        'cifar10_sign_l2_config.json',
-        'cifar10_bandit_l2_config.json',
-        'imagenet_zosignsgd_linf_config.json',
-        'imagenet_nes_linf_config.json',
-        'imagenet_sign_linf_config.json',
-        'imagenet_bandit_linf_config.json',
-        'imagenet_zosignsgd_l2_config.json',
-        'imagenet_nes_l2_config.json',
-        'imagenet_sign_l2_config.json',
-        'imagenet_bandit_l2_config.json'
+        # 'mnist_zosignsgd_linf_config.json',
+        # 'mnist_nes_linf_config.json',
+        # 'mnist_sign_linf_config.json',
+        # 'mnist_bandit_linf_config.json',
+        # 'mnist_zosignsgd_l2_config.json',
+        # 'mnist_nes_l2_config.json',
+        # 'mnist_sign_l2_config.json',
+        # 'mnist_bandit_l2_config.json',
+        # 'cifar10_zosignsgd_linf_config.json',
+        # 'cifar10_nes_linf_config.json',
+        # 'cifar10_sign_linf_config.json',
+        # 'cifar10_bandit_linf_config.json',
+        # 'cifar10_zosignsgd_l2_config.json',
+        # 'cifar10_nes_l2_config.json',
+        # 'cifar10_sign_l2_config.json',
+        # 'cifar10_bandit_l2_config.json',
+        # 'imagenet_zosignsgd_linf_config.json',
+        # 'imagenet_nes_linf_config.json',
+        # 'imagenet_sign_linf_config.json',
+        # 'imagenet_bandit_linf_config.json',
+        # 'imagenet_zosignsgd_l2_config.json',
+        # 'imagenet_nes_l2_config.json',
+        # 'imagenet_sign_l2_config.json',
+        # 'imagenet_bandit_l2_config.json'
+        'mnist_rand_linf_config.json'
     ]
 
     # create/ allocate the result json for tabulation
@@ -138,8 +140,8 @@ if __name__ == '__main__':
             saver.restore(sess, model_file)
 
             # Iterate over the samples batch-by-batch
-            num_eval_examples = 25  # config['num_eval_examples']
-            eval_batch_size = 25  # config['eval_batch_size']
+            num_eval_examples = config['num_eval_examples']
+            eval_batch_size = config['eval_batch_size']
             num_batches = int(math.ceil(num_eval_examples / eval_batch_size))
 
             print('Iterating over {} batches'.format(num_batches))
