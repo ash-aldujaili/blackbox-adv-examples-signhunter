@@ -3,7 +3,7 @@ Implements some handy plotting functions
 """
 import json
 import os
-
+import pickle
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -289,6 +289,28 @@ def plt_from_h5tbl(h5_filenames):
         other_agg_num_loss_queries / sign_agg_num_loss_queries,
         other_agg_fail_rate / sign_agg_fail_rate
     ))
+
+
+def plot_adv_cone_res(pickle_fname):
+    _dir = os.path.join(os.path.dirname(os.path.abspath(pickle_fname)),
+                        '{}_plots'.format(os.path.basename(pickle_fname).split('.')[0]))
+    print(" storing plots at {}".format(_dir))
+    create_dir(_dir)
+
+    with open(pickle_fname, 'rb') as f:
+        res_ = pickle.load(f)
+
+    setups = [_ for _ in res_.keys() if _ != 'epsilon' and _ != 'adv-cone-orders']
+    for ie, _eps in enumerate(res_['epsilon']):
+        plt.clf()
+        for setup in setups:
+            res = res_[setup]
+            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf('Gradient Sign:%s' % setup))
+            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf('SignHunter:%s' % setup))
+            plt.xlabel(bf('k'))
+            plt.ylabel(bf('Evasion Probability'))
+            plt.legend()
+        plt.savefig(os.path.join(_dir, 'eps-{}.pdf'.format(_eps)))
 
 
 if __name__ == '__main__':
