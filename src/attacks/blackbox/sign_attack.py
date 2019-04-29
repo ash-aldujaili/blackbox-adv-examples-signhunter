@@ -81,6 +81,13 @@ class SignAttack(BlackBoxAttack):
                 print("new change")
         return new_xs, np.ones(_shape[0]) + add_queries, cos_sims, ham_sims
 
+    def get_gs(self):
+        """
+        return the current estimated of the gradient sign
+        :return:
+        """
+        return self.sgn_t
+
     def _config(self):
         return {
             "p": self.p,
