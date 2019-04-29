@@ -134,8 +134,8 @@ def main():
             saver.restore(sess, model_file)
 
             # Iterate over the samples batch-by-batch
-            num_eval_examples = 100 # config['num_eval_examples']
-            eval_batch_size = 100 # config['eval_batch_size']
+            num_eval_examples = 600 # config['num_eval_examples']
+            eval_batch_size = 20 # config['eval_batch_size']
             num_batches = int(math.ceil(num_eval_examples / eval_batch_size))
             # consider only correctly classified pts
             eff_num_eval_examples = 0
