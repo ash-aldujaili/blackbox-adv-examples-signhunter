@@ -128,7 +128,7 @@ def main():
 
         with tf.Session(config=tf.ConfigProto(
                 allow_soft_placement=True,
-                gpu_options=tf.GPUOptions(per_process_gpu_memory_fraction=0.9))
+                gpu_options=tf.GPUOptions(allow_growth=True, per_process_gpu_memory_fraction=0.9))
         ) as sess:
             # Restore the checkpoint
             saver.restore(sess, model_file)
