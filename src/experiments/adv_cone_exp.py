@@ -48,7 +48,7 @@ def update_adv_cone_metrics(x_batch, g_batch, early_stop_crit_fct, res):
                 R *= g_batch
                 X = x_batch.reshape(R.shape) + eps * R
                 mis_count += early_stop_crit_fct(X.reshape(_shape))
-            res[ie, ik] = sum(mis_count == k)
+            res[ie, ik] += sum(mis_count == k)
 
 
 def main():
@@ -204,6 +204,10 @@ def main():
                 # compute adversarial cones
                 update_adv_cone_metrics(x_batch, g_batch, early_stop_crit_fct, res[_n]['grad-sign'])
                 print(attacker.summary())
+                print("Adv. Cone Stats for SH:")
+                print(res[_n]['sign-hunter'])
+                print("Adv. Cone Stats for GS:")
+                print(res[_n]['grad-sign'])
 
         res[_n]['sign-hunter'] /= eff_num_eval_examples
         res[_n]['grad-sign'] /= eff_num_eval_examples

@@ -305,8 +305,8 @@ def plot_adv_cone_res(pickle_fname):
         plt.clf()
         for setup in setups:
             res = res_[setup]
-            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf('Gradient Sign:%s' % setup))
-            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf('SignHunter:%s' % setup))
+            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf('Gradient Sign:%s' % setup), linewidth=3)
+            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf('SignHunter:%s' % setup), linewidth=3)
             plt.xlabel(bf('k'))
             plt.ylabel(bf('Evasion Probability'))
             plt.legend()
@@ -343,3 +343,5 @@ if __name__ == '__main__':
                     '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
                     '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5'
                     ])
+
+    #plot_adv_cone_res('./adv-cone.p')
