@@ -27,7 +27,7 @@ np.random.seed(1)
 # Adv. Cone Order
 K = [1, 4, 16, 36, 64, 100]
 EPS = [4 / 255., 10/255., 16/255.]
-#EPS = [0.1, 0.2, 0.3]
+NUM_DATA_PTS = 500 # the  number of data points for which we compute the adv cone
 
 
 def update_adv_cone_metrics(x_batch, g_batch, early_stop_crit_fct, res):
@@ -65,7 +65,7 @@ def main():
 
 
     # init res data structure
-    res = {'epsilon': EPS, 'adv-cone-orders': K}
+    res = {'epsilon': EPS, 'adv-cone-orders': K, 'sign-hunter-step': 4 / 255.}
 
     # config files
     config_files = ['imagenet_sign_linf_config.json', 'imagenet_sign_linf_ens_config.json']
@@ -124,7 +124,7 @@ def main():
 
         # to over-ride attacker's configuration
         attacker.max_loss_queries = 1000
-        attacker.epsilon = 10 / 255.
+        attacker.epsilon = res['sign-hunter-step']
 
         with tf.Session(config=tf.ConfigProto(
                 allow_soft_placement=True,
@@ -134,14 +134,16 @@ def main():
             saver.restore(sess, model_file)
 
             # Iterate over the samples batch-by-batch
-            num_eval_examples = 600 # config['num_eval_examples']
-            eval_batch_size = 20 # config['eval_batch_size']
+            num_eval_examples = int(NUM_DATA_PTS / 0.7) # only correctly classified are considered (boost the total number sampled by the model accuracy)~
+            eval_batch_size = 30 # config['eval_batch_size']
             num_batches = int(math.ceil(num_eval_examples / eval_batch_size))
             # consider only correctly classified pts
             eff_num_eval_examples = 0
             print('Iterating over {} batches'.format(num_batches))
 
             for ibatch in range(num_batches):
+                if eff_num_eval_examples >= NUM_DATA_PTS:
+                    break
                 bstart = ibatch * eval_batch_size
                 bend = min(bstart + eval_batch_size, num_eval_examples)
                 print('batch size: {}:({},{})'.format(bend - bstart, bstart, bend))
@@ -154,11 +156,15 @@ def main():
                     model.y_input: y_batch
                 })
 
-                # pass only correctly classified data
+                # pass only correctly classified data till the NUM_DATA_PTS
                 x_batch = x_batch[is_correct, :]
                 y_batch = y_batch[is_correct]
 
-                eff_num_eval_examples += sum(is_correct)
+                batch_size = min(NUM_DATA_PTS - eff_num_eval_examples, sum(is_correct))
+                x_batch = x_batch[:batch_size, :]
+                y_batch = y_batch[:batch_size]
+
+                eff_num_eval_examples += batch_size
 
                 def loss_fct(xs):
                     _l = sess.run(model.y_xent, feed_dict={
@@ -212,12 +218,11 @@ def main():
         res[_n]['sign-hunter'] /= eff_num_eval_examples
         res[_n]['grad-sign'] /= eff_num_eval_examples
 
-    p_fname = os.path.join(_dir, 'adv-cone.p')
+    p_fname = os.path.join(_dir, 'adv-cone_step-{}.p'.format(res['sign-hunter-step']))
     with open(p_fname, 'wb') as f:
         pickle.dump(res, f)
 
     plot_adv_cone_res(p_fname)
-
 
 
 if __name__ == '__main__':

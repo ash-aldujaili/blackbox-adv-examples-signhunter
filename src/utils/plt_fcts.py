@@ -248,11 +248,11 @@ def plt_from_h5tbl(h5_filenames):
         print("Data set: {}".format(dset))
         print(tbl_df.set_index('attack'))
 
-        scs_ax.legend()
+        scs_ax.legend(loc=4)
         ham_ax.legend()
         cos_ax.legend()
         loss_ax.legend()
-        qry_ax.legend()
+        qry_ax.legend(loc=4)
 
         scs_ax.set_xlabel(bf('\# queries'))
         ham_ax.set_xlabel(bf('\# queries'))
@@ -292,6 +292,7 @@ def plt_from_h5tbl(h5_filenames):
 
 
 def plot_adv_cone_res(pickle_fname):
+    pgf_setup()
     _dir = os.path.join(os.path.dirname(os.path.abspath(pickle_fname)),
                         '{}_plots'.format(os.path.basename(pickle_fname).split('.')[0]))
     print(" storing plots at {}".format(_dir))
@@ -300,13 +301,13 @@ def plot_adv_cone_res(pickle_fname):
     with open(pickle_fname, 'rb') as f:
         res_ = pickle.load(f)
 
-    setups = [_ for _ in res_.keys() if _ != 'epsilon' and _ != 'adv-cone-orders']
+    setups = [_ for _ in res_.keys() if _ != 'epsilon' and _ != 'adv-cone-orders' and _ != 'sign-hunter-step']
     for ie, _eps in enumerate(res_['epsilon']):
         plt.clf()
         for setup in setups:
             res = res_[setup]
-            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf('Gradient Sign:%s' % setup), linewidth=3)
-            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf('SignHunter:%s' % setup), linewidth=3)
+            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf('\\texttt{Linearization}:%s' % setup), linewidth=3)
+            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf('\\texttt{SignHunter}:%s' % setup), linewidth=3)
             plt.xlabel(bf('k'))
             plt.ylabel(bf('Evasion Probability'))
             plt.legend()
@@ -315,33 +316,34 @@ def plot_adv_cone_res(pickle_fname):
 
 if __name__ == '__main__':
     # To plot k sign plots
-    plot_keep_k_sign_exp([
-        '../../data/keep_k_res/mnist_linf_res.json',
-        '../../data/keep_k_res/cifar10_linf_res.json',
-        '../../data/keep_k_res/imagenet_linf_res.json',
-        '../../data/keep_k_res/mnist_l2_res.json',
-        '../../data/keep_k_res/cifar10_l2_res.json',
-        '../../data/keep_k_res/imagenet_l2_res.json'
-    ])
+    # plot_keep_k_sign_exp([
+    #     '../../data/keep_k_res/mnist_linf_res.json',
+    #     '../../data/keep_k_res/cifar10_linf_res.json',
+    #     '../../data/keep_k_res/imagenet_linf_res.json',
+    #     '../../data/keep_k_res/mnist_l2_res.json',
+    #     '../../data/keep_k_res/cifar10_l2_res.json',
+    #     '../../data/keep_k_res/imagenet_l2_res.json'
+    # ])
+    #
+    # # plot tuning results
+    # plt_from_h5tbl(['../../data/blackbox_attack_exp/tune_tbl.h5'])
+    #
+    # # plot challenges trace
+    # plt_from_h5tbl(['../../data/blackbox_attack_exp/adv_cifar10_sign_tbl.h5'])
+    # plt_from_h5tbl(['../../data/blackbox_attack_exp/adv_mnist_sign_tbl.h5'])
+    #
+    # # plot all
+    # plt_from_h5tbl(['../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+    #                 #'../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
+    #                  '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
+    #                 # '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
+    #                  '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
+    #                 # '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
+    #                 # '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
+    #                 # '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
+    #                 # '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5'
+    #                 ])
 
-    # plot tuning results
-    plt_from_h5tbl(['../../data/blackbox_attack_exp/tune_tbl.h5'])
-
-    # plot challenges trace
-    plt_from_h5tbl(['../../data/blackbox_attack_exp/adv_cifar10_sign_tbl.h5'])
-    plt_from_h5tbl(['../../data/blackbox_attack_exp/adv_mnist_sign_tbl.h5'])
-
-    # plot all
-    plt_from_h5tbl(['../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
-                    '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
-                    '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
-                    '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-                    '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
-                    '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
-                    '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
-                    '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
-                    '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
-                    '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5'
-                    ])
-
-    #plot_adv_cone_res('./adv-cone.p')
+    plot_adv_cone_res('../../data/adv_cone_exp/adv-cone-eps4.p')
