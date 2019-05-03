@@ -301,7 +301,7 @@ def plot_adv_cone_res(pickle_fname):
     with open(pickle_fname, 'rb') as f:
         res_ = pickle.load(f)
 
-    setups = [_ for _ in res_.keys() if _ != 'epsilon' \ 
+    setups = [_ for _ in res_.keys() if _ != 'epsilon' \
 			and _ != 'adv-cone-orders' \
 			and _ != 'sign-hunter-step'\
 			and _ != 'num_queries']
