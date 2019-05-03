@@ -65,7 +65,7 @@ def main():
 
 
     # init res data structure
-    res = {'epsilon': EPS, 'adv-cone-orders': K, 'sign-hunter-step': 4 / 255.}
+    res = {'epsilon': EPS, 'adv-cone-orders': K, 'sign-hunter-step': 4 / 255., 'num_queries': 500}
 
     # config files
     config_files = ['imagenet_sign_linf_config.json', 'imagenet_sign_linf_ens_config.json']
@@ -123,7 +123,7 @@ def main():
         )
 
         # to over-ride attacker's configuration
-        attacker.max_loss_queries = 1000
+        attacker.max_loss_queries = res['num_queries']
         attacker.epsilon = res['sign-hunter-step']
 
         with tf.Session(config=tf.ConfigProto(
