@@ -31,11 +31,11 @@ def pgf_setup():
         "font.serif": [],  # blank entries should cause plots to inherit fonts from the document
         "font.sans-serif": [],
         "font.monospace": [],
-        "axes.labelsize": 22,  # LaTeX default is 10pt font.
+        "axes.labelsize": 24,  # LaTeX default is 10pt font.
         "lines.markersize": 20,
         "lines.linewidth": 5,
         "font.size": 20,
-        "legend.fontsize": 18,  # Make the legend/label fonts a little smaller
+        "legend.fontsize": 20,  # Make the legend/label fonts a little smaller
         "xtick.labelsize": 20,
         "ytick.labelsize": 20,
         "text.usetex": True,  # use LaTeX to write all text
@@ -44,7 +44,8 @@ def pgf_setup():
         "pgf.preamble": [
             r"\usepackage[utf8x]{inputenc}",  # use utf8 fonts becasue your computer can handle it :)
             r"\usepackage[T1]{fontenc}",  # plots will be generated using this preamble
-            r"\usepackage{amsmath}", r'\boldmath'
+            r"\usepackage{amsmath}", r'\boldmath',
+            r"\usepackage[scaled=0.85]{beramono}"
         ]
     }
     mpl.rcParams.update(pgf_with_latex)
@@ -174,12 +175,14 @@ def plt_from_h5tbl(h5_filenames):
         # to compute aggregated failure rate and loss queries
         other_fail_rate = 1
         other_num_loss_queries = np.float("inf")
+        sign_fail_rate = 1
+        sign_num_loss_queries = np.float("inf")
         for attack, _at_df in _dp_df.groupby('attack'):
             # replace the name
             attack_name = attack.replace('Attack', '').replace('Sign', 'SignHunter').replace('Bandit',
                                                                                              'Bandits$_{TD}$').replace(
                 'ZOSignHunter', 'ZOSign')
-            attack_name = r"""\texttt{%s}""" % attack_name
+            attack_name = bf(r"""\texttt{%s}""" % attack_name)
             # temp df to store for each batch the latest record (latest in terms of iteration)
             _df = _at_df.groupby('batch_id').apply(lambda _: _[_.iteration == _.iteration.max()])
             agg_at_df = _at_df.groupby('iteration').sum().reset_index()
@@ -248,11 +251,15 @@ def plt_from_h5tbl(h5_filenames):
         print("Data set: {}".format(dset))
         print(tbl_df.set_index('attack'))
 
-        scs_ax.legend(loc=4)
-        ham_ax.legend()
-        cos_ax.legend()
-        loss_ax.legend()
-        qry_ax.legend(loc=4)
+
+        # if you 'd like to show all the legends here
+        #ham_ax.legend()
+        #cos_ax.legend()
+        #loss_ax.legend()
+        if dset == 'mnist' and p == 'inf':
+            qry_ax.legend(loc=1)
+        elif p == 'inf':
+            scs_ax.legend(loc=4)
 
         scs_ax.set_xlabel(bf('\# queries'))
         ham_ax.set_xlabel(bf('\# queries'))
@@ -291,7 +298,7 @@ def plt_from_h5tbl(h5_filenames):
     ))
 
 
-def plot_adv_cone_res(pickle_fname):
+def plot_adv_cone_res(pickle_fname, is_legend=True):
     pgf_setup()
     _dir = os.path.join(os.path.dirname(os.path.abspath(pickle_fname)),
                         '{}_plots'.format(os.path.basename(pickle_fname).split('.')[0]))
@@ -302,19 +309,31 @@ def plot_adv_cone_res(pickle_fname):
         res_ = pickle.load(f)
 
     setups = [_ for _ in res_.keys() if _ != 'epsilon' \
-			and _ != 'adv-cone-orders' \
-			and _ != 'sign-hunter-step'\
-			and _ != 'num_queries']
+                and _ != 'adv-cone-orders' \
+                and _ != 'sign-hunter-step'\
+                and _ != 'num_queries']
+
+    plot_fnames = []
     for ie, _eps in enumerate(res_['epsilon']):
         plt.clf()
-        for setup in setups:
+        for setup, color in zip(setups, ['red', 'blue']):
             res = res_[setup]
-            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf('\\texttt{Linearization}:%s' % setup), linewidth=3)
-            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf('\\texttt{SignHunter}:%s' % setup), linewidth=3)
+            _m = '_{\\text{adv-ens4}}' if 'ens' in setup else ''
+            plt.plot(res_['adv-cone-orders'], res['grad-sign'][ie, :], label=bf("v3$%s$-\\texttt{GAAS}" % _m),
+                     linewidth=2, linestyle='--', color=color)
+            plt.plot(res_['adv-cone-orders'], res['sign-hunter'][ie, :], label=bf("v3$%s$-\\texttt{SAAS}" % _m),
+                     linewidth=3, linestyle='-', color=color)
             plt.xlabel(bf('k'))
-            plt.ylabel(bf('Evasion Probability'))
-            plt.legend()
-        plt.savefig(os.path.join(_dir, 'eps-{}.pdf'.format(_eps)))
+            plt.xticks([1, 50, 100])
+            plt.ylim(0.0, 0.9)
+            plt.yticks([0.0, 0.2, 0.4, 0.6, 0.8])
+            if is_legend:
+                plt.legend()
+                plt.ylabel(bf('Probability'))
+        plot_fnames.append(os.path.join(_dir, 'eps-{}.pdf'.format(int(_eps * 255))))
+        plt.savefig(plot_fnames[-1])
+
+    return plot_fnames
 
 
 if __name__ == '__main__':
@@ -334,19 +353,34 @@ if __name__ == '__main__':
     # # plot challenges trace
     # plt_from_h5tbl(['../../data/blackbox_attack_exp/adv_cifar10_sign_tbl.h5'])
     # plt_from_h5tbl(['../../data/blackbox_attack_exp/adv_mnist_sign_tbl.h5'])
+    # plt_from_h5tbl(['../../data/blackbox_attack_exp/ens_imagenet_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/ens_imagenet_tbl_1.h5',
+    #                 '../../data/blackbox_attack_exp/ens_imagenet_tbl_2.h5',
+    #                 '../../data/blackbox_attack_exp/ens_imagenet_tbl_3.h5',
+    #                 ])
     #
     # # plot all
     # plt_from_h5tbl(['../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
     #                 '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
     #                 '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
-    #                 #'../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
     #                  '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-    #                 # '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
+    #                  '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
     #                  '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
-    #                 # '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
-    #                 # '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
-    #                 # '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
-    #                 # '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5'
+    #                 '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
+    #                 '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5'
     #                 ])
 
-    plot_adv_cone_res('../../data/adv_cone_exp/adv-cone-eps4.p')
+
+    # plot adv cone plots
+    adv_cone_files = [  'adv-cone_step-10_query-1000.p',
+                        'adv-cone_step-10_query-500.p',
+                        'adv-cone_step-16_query-1000.p',
+                        'adv-cone_step-16_query-500.p',
+                        'adv-cone_step-4_query-1000.p',
+                        'adv-cone_step-4_query-500.p']
+    for _i, _f in enumerate(adv_cone_files):
+        plot_adv_cone_res(data_path_join('adv_cone_exp', _f), is_legend= _i == 4)
