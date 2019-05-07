@@ -26,7 +26,10 @@ np.random.seed(1)
 
 # Adv. Cone Order
 K = [1, 4, 16, 36, 64, 100]
-EPS = [4 / 255., 10/255., 16/255.]
+#EPS = [4 / 255., 10/255., 16/255.]
+#EPS = [8]
+EPS = [0.3]
+
 NUM_DATA_PTS = 500 # the  number of data points for which we compute the adv cone
 
 
@@ -63,15 +66,15 @@ def main():
     # for reproducibility
     np.random.seed(1)
 
-
     # init res data structure
-    res = {'epsilon': EPS, 'adv-cone-orders': K, 'sign-hunter-step': 4 / 255., 'num_queries': 500}
+    res = {'epsilon': EPS, 'adv-cone-orders': K, 'sign-hunter-step': 0.3, 'num_queries': 500}
 
     # config files
-    config_files = ['imagenet_sign_linf_config.json', 'imagenet_sign_linf_ens_config.json']
+    # config_files = ['imagenet_sign_linf_config.json', 'imagenet_sign_linf_ens_config.json']
+    config_files = ['mnist_sign_linf_config.json', 'mnist_sign_linf_adv_config.json']
 
     # config load
-    for _n, _cf in zip(['v3-nat', 'v3-ens'], config_files):
+    for _n, _cf in zip(['nat', 'adv'], config_files):
         tf.reset_default_graph()
         config_file = config_path_join(_cf)
         with open(config_file) as config_file:
