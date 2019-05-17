@@ -36,13 +36,14 @@ from attacks.blackbox.bandit_attack import BanditAttack
 from attacks.blackbox.zo_sign_sgd_attack import ZOSignSGDAttack
 from attacks.blackbox.sign_attack import SignAttack
 from attacks.blackbox.random_attack import RandAttack
+from attacks.blackbox.naive_attack import NaiveAttack
 
 # to run the attacks on a quadratic function with no constraint
 # i.e. a concave fct with a single global solution
 IS_DEBUG_MODE = False
 
 if __name__ == '__main__':
-    exp_id = 'rand_mnist'
+    exp_id = 'naive_mnist'
     print("Running Experiment {} with DEBUG MODE {}".format(exp_id, IS_DEBUG_MODE))
     cfs = [
         # 'mnist_zosignsgd_linf_config.json',
@@ -69,12 +70,18 @@ if __name__ == '__main__':
         # 'imagenet_nes_l2_config.json',
         # 'imagenet_sign_l2_config.json',
         # 'imagenet_bandit_l2_config.json'
-        'mnist_rand_linf_config.json',
-        'cifar10_rand_linf_config.json',
-	'imagenet_rand_linf_config.json',
-	'mnist_rand_l2_config.json',
-        'cifar10_rand_l2_config.json',
-        'imagenet_rand_l2_config.json'
+        # 'mnist_rand_linf_config.json',
+        # 'cifar10_rand_linf_config.json',
+	    # 'imagenet_rand_linf_config.json',
+	    # 'mnist_rand_l2_config.json',
+        # 'cifar10_rand_l2_config.json',
+        # 'imagenet_rand_l2_config.json'
+        'mnist_naive_linf_config.json',
+        'cifar10_naive_linf_config.json',
+        # 'imagenet_naive_linf_config.json',
+         'mnist_naive_l2_config.json',
+        'cifar10_naive_l2_config.json',
+        # 'imagenet_naive_l2_config.json'
     ]
 
     # create/ allocate the result json for tabulation
@@ -129,7 +136,6 @@ if __name__ == '__main__':
 
         attacker = eval(config['attack_name'])(
             **config['attack_config'],
-            # max_loss_queries=10000,
             lb=dset.min_value,
             ub=dset.max_value
         )
@@ -155,7 +161,7 @@ if __name__ == '__main__':
             for ibatch in range(num_batches):
                 bstart = ibatch * eval_batch_size
                 bend = min(bstart + eval_batch_size, num_eval_examples)
-                print('batch size: {}'.format(bend - bstart))
+                print('batch size: {}: ({}, {})'.format(bend - bstart, bstart, bend))
 
                 x_batch, y_batch = dset.get_eval_data(bstart, bend)
 
