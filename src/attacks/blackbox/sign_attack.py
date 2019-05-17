@@ -1,5 +1,5 @@
 """
-Implements the binary based attack
+Implements SignHunter
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -14,7 +14,7 @@ from utils.compute_fcts import lp_step, sign
 
 class SignAttack(BlackBoxAttack):
     """
-    Sign Attack
+    SignHunter
     """
 
     def __init__(self, max_loss_queries, epsilon, p, fd_eta, lb, ub):
