@@ -31,11 +31,11 @@ def pgf_setup():
         "font.serif": [],  # blank entries should cause plots to inherit fonts from the document
         "font.sans-serif": [],
         "font.monospace": [],
-        "axes.labelsize": 24,  # LaTeX default is 10pt font.
+        "axes.labelsize": 28,  # LaTeX default is 10pt font.
         "lines.markersize": 20,
         "lines.linewidth": 5,
         "font.size": 20,
-        "legend.fontsize": 20,  # Make the legend/label fonts a little smaller
+        "legend.fontsize": 25,  # Make the legend/label fonts a little smaller
         "xtick.labelsize": 20,
         "ytick.labelsize": 20,
         "text.usetex": True,  # use LaTeX to write all text
@@ -70,7 +70,8 @@ def plot_keep_k_sign_exp(files):
         with open(file, 'r') as f:
             res = json.load(f)
         # process data
-        xticks = [bf(r"{0:.0f}%".format(_x * 100)) for _x in res['retain_p']]
+        step_size = 2
+        xticks = [ (_ix, bf(r"{0:.0f}%".format(_x * 100))) for _ix, _x in enumerate(res['retain_p'])][::step_size]
         res = res[dset]
         ys_rand = [1 - _y for _y in res['random']['adv_acc']]
         ys_top = [1 - _y for _y in res['top']['adv_acc']]
@@ -79,7 +80,7 @@ def plot_keep_k_sign_exp(files):
         ax.plot(ys_rand, label=bf('random-k'), linestyle='--', marker='.')
         ax.plot(ys_top, label=bf('top-k'), linestyle='--', marker='*')
         if i == 0: ax.legend()  # show legend for the first
-        plt.xticks(np.arange(len(xticks)), xticks)
+        plt.xticks(*list(zip(*xticks)))
         ax.set_ylabel(bf('misclassification rate'))
         ax.set_xlabel(bf('k percent of {} coordinates'.format(dset.upper())))
         plt.tight_layout()
@@ -257,7 +258,7 @@ def plt_from_h5tbl(h5_filenames):
         #cos_ax.legend()
         #loss_ax.legend()
         if dset == 'mnist' and p == 'inf':
-            qry_ax.legend(loc=1)
+            qry_ax.legend(loc='upper left')
         elif p == 'inf':
             scs_ax.legend(loc=4)
 
@@ -347,7 +348,7 @@ if __name__ == '__main__':
     #     '../../data/keep_k_res/imagenet_l2_res.json'
     # ])
     #
-    # # plot tuning results
+    # plot tuning results
     # plt_from_h5tbl(['../../data/blackbox_attack_exp/tune_tbl.h5'])
     #
     # # plot challenges trace
@@ -360,27 +361,27 @@ if __name__ == '__main__':
     #                 ])
     #
     # # plot all
-    # plt_from_h5tbl(['../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
-    #                  '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-    #                  '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
-    #                  '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
-    #                 '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5'
-    #                 ])
+    plt_from_h5tbl([#'../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
+                    #'../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
+                    #'../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+                    # '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
+                    #  '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
+                    #  '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
+                    #  '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
+                    # '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
+                    # '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
+                    # '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
+                    # '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
+                    '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5'
+                    ])
 
 
-    # plot adv cone plots
-    adv_cone_files = [  'adv-cone_step-10_query-1000.p',
-                        'adv-cone_step-10_query-500.p',
-                        'adv-cone_step-16_query-1000.p',
-                        'adv-cone_step-16_query-500.p',
-                        'adv-cone_step-4_query-1000.p',
-                        'adv-cone_step-4_query-500.p']
-    for _i, _f in enumerate(adv_cone_files):
-        plot_adv_cone_res(data_path_join('adv_cone_exp', _f), is_legend= _i == 4)
+    # # plot adv cone plots
+    # adv_cone_files = [  'adv-cone_step-10_query-1000.p',
+    #                     'adv-cone_step-10_query-500.p',
+    #                     'adv-cone_step-16_query-1000.p',
+    #                     'adv-cone_step-16_query-500.p',
+    #                     'adv-cone_step-4_query-1000.p',
+    #                     'adv-cone_step-4_query-500.p']
+    # for _i, _f in enumerate(adv_cone_files):
+    #     plot_adv_cone_res(data_path_join('adv_cone_exp', _f), is_legend= _i == 4)
