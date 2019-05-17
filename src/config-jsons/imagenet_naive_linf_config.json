@@ -1,0 +1,20 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_file": "imagenet_models/inception_v3.ckpt",
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "imagenet",
+  "dset_config": {
+    "data_dir": "/home/aldujail/imagenet/tf_val_set"
+  },
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 1000,
+  "eval_batch_size": 40,
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "attack_name": "NaiveAttack",
+  "attack_config": {
+    "epsilon": 0.05,
+    "p": "inf",
+    "max_loss_queries": 10000
+  },
+  "device": "/gpu:1"
+}
