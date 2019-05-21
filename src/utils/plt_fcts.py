@@ -71,7 +71,7 @@ def plot_keep_k_sign_exp(files):
             res = json.load(f)
         # process data
         step_size = 2
-        xticks = [ (_ix, bf(r"{0:.0f}%".format(_x * 100))) for _ix, _x in enumerate(res['retain_p'])][::step_size]
+        xticks = [(_ix, bf(r"{0:.0f}%".format(_x * 100))) for _ix, _x in enumerate(res['retain_p'])][::step_size]
         res = res[dset]
         ys_rand = [1 - _y for _y in res['random']['adv_acc']]
         ys_top = [1 - _y for _y in res['top']['adv_acc']]
@@ -193,7 +193,10 @@ def plt_from_h5tbl(h5_filenames):
             def update_fields(row):
                 update_row = _df[_df.iteration < row.iteration].sum()
                 for key in row.keys():
-                    if key in ['iteration', 'batch_id']:
+                    if key in ['iteration',
+                               'batch_id',
+                               'num_loss_queries_per_iteration',
+                               'num_crit_queries_per_iteration']:
                         continue
                     row[key] += update_row[key]
                 return row
@@ -222,23 +225,56 @@ def plt_from_h5tbl(h5_filenames):
             else:
                 qry_ax.plot(scs_rate, avg_scs_loss_queries, label=attack_name)
 
-            print("attack: {}, l-{}, failure rate: {}, avg. loss.: {}".format(
+            # Compute std loss queries: some bookkeeping is needed to extract
+            # the number of queries used for each datapoint and compute the std accordingly
+
+            def process_at_df(_):
+                """
+                takes the at_df dataframe and replaces the num_loss_queries by the cumulative sum
+                since for some methods the queries used vary from one iteration to the other
+                """
+                _['cum_loss_queries'] = _.num_loss_queries_per_iteration.cumsum()
+                return _
+
+            _std_df = _at_df.groupby(['batch_id']).apply(
+                process_at_df).reset_index(drop=True)
+
+            std_df = _std_df.groupby(['batch_id', 'total_successes']).apply(
+                lambda _: _[_.iteration == _.iteration.min()]).reset_index(drop=True)
+
+            total_loss_query = std_df.groupby('batch_id').apply(
+                lambda _: _.cum_loss_queries * (
+                    _.total_successes.diff().fillna(_.total_successes))).sum()
+            total_loss_query_squared = std_df.groupby('batch_id').apply(
+                lambda _: _.cum_loss_queries ** 2 * (
+                    _.total_successes.diff().fillna(_.total_successes))).sum()
+            total_success = _at_df.groupby('batch_id').apply(
+                lambda _: _[_.iteration == _.iteration.max()]['total_successes']).sum()
+
+            avg_loss_queries = total_loss_query / total_success
+            std_loss_queries = np.sqrt(total_loss_query_squared / (total_success - 1) -
+                                       total_success * avg_loss_queries ** 2 / (total_success - 1))
+
+            print("attack: {}, l-{}, failure rate: {}, avg. loss.: {}, std. loss.: {}".format(
                 attack_name,
                 p,
                 1 - scs_rate[-1],
-                avg_scs_loss_queries[-1]
+                avg_loss_queries,
+                std_loss_queries
             ))
 
             tbl_df = tbl_df.append(pd.DataFrame.from_records([{
                 'attack': attack_name,
                 'p': p,
                 'failure_rate': 1 - scs_rate[-1],
-                'avg. loss': avg_scs_loss_queries[-1]
+                'avg. loss': avg_scs_loss_queries[-1],
+                'std. loss': std_loss_queries
             }]), ignore_index=True)
 
             if attack == 'SignAttack':
                 sign_fail_rate = 1 - scs_rate[-1]
                 sign_num_loss_queries = avg_scs_loss_queries[-1]
+            elif attack == 'RandAttack': pass
             else:
                 other_fail_rate = min(other_fail_rate, 1 - scs_rate[-1])
                 other_num_loss_queries = min(other_num_loss_queries, avg_scs_loss_queries[-1])
@@ -252,11 +288,10 @@ def plt_from_h5tbl(h5_filenames):
         print("Data set: {}".format(dset))
         print(tbl_df.set_index('attack'))
 
-
         # if you 'd like to show all the legends here
-        #ham_ax.legend()
-        #cos_ax.legend()
-        #loss_ax.legend()
+        # ham_ax.legend()
+        # cos_ax.legend()
+        # loss_ax.legend()
         if dset == 'mnist' and p == 'inf':
             qry_ax.legend(loc='upper left')
         elif p == 'inf':
@@ -293,7 +328,8 @@ def plt_from_h5tbl(h5_filenames):
 
     # This will raise a warning (div by zero) if no SignHunter AND no other algorithm is included in the passed .tbl files
     # which you can ignore safely.
-    print("SignHunter uses {} times less queries and fails {} times less often than SOTA combined.".format(
+    print("SignHunter uses {} times less queries and fails {} times less often than SOTA combined. "
+          "These numbers are valid ONLY when the data of signhunter  AND one or more other algorithms are included.".format(
         other_agg_num_loss_queries / sign_agg_num_loss_queries,
         other_agg_fail_rate / sign_agg_fail_rate
     ))
@@ -310,9 +346,9 @@ def plot_adv_cone_res(pickle_fname, is_legend=True):
         res_ = pickle.load(f)
 
     setups = [_ for _ in res_.keys() if _ != 'epsilon' \
-                and _ != 'adv-cone-orders' \
-                and _ != 'sign-hunter-step'\
-                and _ != 'num_queries']
+              and _ != 'adv-cone-orders' \
+              and _ != 'sign-hunter-step' \
+              and _ != 'num_queries']
 
     plot_fnames = []
     for ie, _eps in enumerate(res_['epsilon']):
@@ -361,20 +397,19 @@ if __name__ == '__main__':
     #                 ])
     #
     # # plot all
-    plt_from_h5tbl([#'../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
-                    #'../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
-                    #'../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
-                    # '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
-                    #  '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-                    #  '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
-                    #  '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
-                    # '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
-                    # '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
-                    # '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
-                    # '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
-                    '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5'
-                    ])
-
+    plt_from_h5tbl(['../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
+        '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
+        '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+        '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
+         '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
+         '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
+         '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
+        '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
+        '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
+        '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
+        '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
+        '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5'
+    ])
 
     # # plot adv cone plots
     # adv_cone_files = [  'adv-cone_step-10_query-1000.p',
