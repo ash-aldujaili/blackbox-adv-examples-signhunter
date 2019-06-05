@@ -1,0 +1,17 @@
+{
+    "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+    "model_dir": "mnist_models/models/secret",
+    "dset_name": "mnist",
+    "dset_config": {},
+    "num_eval_examples": 10000,
+    "eval_batch_size": 400,
+    "attack_name": "SignAttack",
+    "attack_config": {
+        "epsilon": 0.3,
+        "p": "inf",
+        "fd_eta": 0.3,
+        "max_loss_queries": 5000
+    },
+    "device": "/gpu:1",
+    "store_adv_path": "mnist_attack.npy"
+}

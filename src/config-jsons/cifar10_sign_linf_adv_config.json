@@ -1,0 +1,24 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_dir": "cifar10_models/models/model_0",
+
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "cifar10",
+  "dset_config": {},
+
+
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 10000,
+  "eval_batch_size": 50,
+
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+    "attack_name": "SignAttack",
+    "attack_config": {
+        "epsilon": 8,
+        "p": "inf",
+        "fd_eta": 8,
+        "max_loss_queries": 5000
+    },
+    "device": "/gpu:1",
+    "store_adv_path": "cifar10_attack.npy"
+}

@@ -1,0 +1,25 @@
+{
+  "_comment": "===== MODEL CONFIGURATION =====",
+  "model_file": "imagenet_models/ens_adv_inception_v3.ckpt",
+  "_comment": "===== DATASET CONFIGURATION =====",
+  "dset_name": "imagenet",
+  "dset_config": {
+    "data_dir": "/home/aldujail/imagenet/tf_val_set"
+  },
+
+  "_comment": "===== EVAL CONFIGURATION =====",
+  "num_eval_examples": 2500,
+  "eval_batch_size": 25,
+  "eval_offset": 0,
+
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+    "attack_name": "SignAttack",
+    "attack_config": {
+        "epsilon": 0.0625,
+        "p": "inf",
+        "fd_eta": 0.0625,
+        "max_loss_queries": 1000
+    },
+    "device": "/gpu:1",
+    "store_adv_path": "ens_img_attack.npy"
+}

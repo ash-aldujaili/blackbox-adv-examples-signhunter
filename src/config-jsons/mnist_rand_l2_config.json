@@ -1,0 +1,15 @@
+{
+  "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
+  "model_dir": "mnist_models/models/natural",
+  "dset_name": "mnist",
+  "dset_config": {},
+  "num_eval_examples": 1000,
+  "eval_batch_size": 200,
+  "attack_name": "RandAttack",
+  "attack_config": {
+    "epsilon": 3.0,
+    "p": "2",
+    "max_loss_queries": 10000
+  },
+  "device": "/gpu:1"
+}
