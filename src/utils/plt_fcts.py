@@ -166,6 +166,7 @@ def plt_from_h5tbl(h5_filenames):
     other_agg_num_loss_queries = 0
     total_sets = 0.  # to compute the aggregated perofrmance
     for (dset, p), _dp_df in df.groupby(['dataset', 'p']):
+        if p == '2': continue
         total_sets += 1.
         tbl_df = pd.DataFrame()
         loss_fig, loss_ax = plt.subplots()
@@ -211,6 +212,10 @@ def plt_from_h5tbl(h5_filenames):
                                     (agg_at_df.total_loss_queries / agg_at_df.total_successes).tolist()]
             # to get the number of queries per example per iteration.
             loss_queries = np.cumsum(agg_at_df.num_loss_queries_per_iteration / len(_df))
+            # find batch id with max iteration
+            max_batch_id = _df[_df.iteration == _df.iteration.max()].batch_id.tolist()[0]
+            print(max_batch_id)
+            loss_queries = _at_df[_at_df.batch_id == max_batch_id].num_loss_queries_per_iteration.cumsum().tolist()
             # average cosine / ham / loss values per example (be it successful or failed)
             avg_cos_sim = (agg_at_df.total_cos_sim / (agg_at_df.total_successes + agg_at_df.total_failures)).tolist()
             avg_ham_sim = (agg_at_df.total_ham_sim / (agg_at_df.total_successes + agg_at_df.total_failures)).tolist()
@@ -289,13 +294,13 @@ def plt_from_h5tbl(h5_filenames):
         print(tbl_df.set_index('attack'))
 
         # if you 'd like to show all the legends here
-        # ham_ax.legend()
-        # cos_ax.legend()
-        # loss_ax.legend()
-        if dset == 'mnist' and p == 'inf':
-            qry_ax.legend(loc='upper left')
-        elif p == 'inf':
-            scs_ax.legend(loc=4)
+        ham_ax.legend()
+        cos_ax.legend()
+        loss_ax.legend()
+        #if dset == 'mnist' and p == 'inf':
+        qry_ax.legend(loc='upper left')
+        #elif p == 'inf':
+        scs_ax.legend(loc=4)
 
         scs_ax.set_xlabel(bf('\# queries'))
         ham_ax.set_xlabel(bf('\# queries'))
@@ -397,19 +402,27 @@ if __name__ == '__main__':
     #                 ])
     #
     # # plot all
-    plt_from_h5tbl(['../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
+    # plt_from_h5tbl([
+    #     '../../data/blackbox_attack_exp/mnist_naive_tbl.h5',
+    #     '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
+    #     '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
+    #     '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+
+    #     # '../../data/blackbox_attack_exp/imagenet_naive_tbl.h5',
+    #     # '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
+    #     # '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5',
+    # ])
+
+
+
+    plt_from_h5tbl([
+        '../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
         '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
-        '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+        '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
         '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
-         '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-         '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
-         '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
         '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
         '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
-        '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
-        '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
-        '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5'
-    ])
+        ])
 
     # # plot adv cone plots
     # adv_cone_files = [  'adv-cone_step-10_query-1000.p',
