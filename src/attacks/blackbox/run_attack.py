@@ -37,13 +37,14 @@ from attacks.blackbox.zo_sign_sgd_attack import ZOSignSGDAttack
 from attacks.blackbox.sign_attack import SignAttack
 from attacks.blackbox.random_attack import RandAttack
 from attacks.blackbox.naive_attack import NaiveAttack
+from attacks.blackbox.shc_attack import SHCAttack
 
 # to run the attacks on a quadratic function with no constraint
 # i.e. a concave fct with a single global solution
 IS_DEBUG_MODE = False
 
 if __name__ == '__main__':
-    exp_id = 'naive_mnist'
+    exp_id = 'shc_mnist_cifar_linf'
     print("Running Experiment {} with DEBUG MODE {}".format(exp_id, IS_DEBUG_MODE))
     cfs = [
         # 'mnist_zosignsgd_linf_config.json',
@@ -76,11 +77,17 @@ if __name__ == '__main__':
 	    # 'mnist_rand_l2_config.json',
         # 'cifar10_rand_l2_config.json',
         # 'imagenet_rand_l2_config.json'
-        'mnist_naive_linf_config.json',
-        'cifar10_naive_linf_config.json',
+        'mnist_shc_linf_config.json'
+        'cifar10_shc_linf_config.json'
+        #'mnist_shc_l2_config.json'
+        #'cifar10_shc_l2_config.json'
+        #'imagenet_shc_linf_config.json'
+        #'imagenet_shc_l2_config.json'
+        #'mnist_naive_linf_config.json',
+        #'cifar10_naive_linf_config.json',
         # 'imagenet_naive_linf_config.json',
-         'mnist_naive_l2_config.json',
-        'cifar10_naive_l2_config.json',
+        # 'mnist_naive_l2_config.json',
+        #'cifar10_naive_l2_config.json',
         # 'imagenet_naive_l2_config.json'
     ]
 
