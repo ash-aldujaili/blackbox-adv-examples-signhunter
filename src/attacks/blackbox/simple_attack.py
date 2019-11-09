@@ -57,7 +57,7 @@ class SimpleAttack(BlackBoxAttack):
             add_queries = 1
         diff = ch.zeros(b_sz, dim)
         # % if iterations are greater than dim
-        idx = self.perm[self.i % dim]
+        idx = self.perm[:, self.i % dim]
         diff = diff.scatter(1, idx.unsqueeze(1), 1)
         new_xs = xs_t.clone()
         # left attempt
