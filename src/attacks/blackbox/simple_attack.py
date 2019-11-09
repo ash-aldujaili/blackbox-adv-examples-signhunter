@@ -52,7 +52,7 @@ class SimpleAttack(BlackBoxAttack):
             #self.sgn_t = sign(ch.ones(_shape[0], dim))
             #fxs_t = lp_step(self.xo_t, self.sgn_t.view(_shape), self.epsilon, self.p)
             #bxs_t = self.xo_t
-            loss = loss_fct(self.xo_t.cpu().numpy())
+            loss = loss_fct(xs_t.cpu().numpy())
             self.best_loss = loss
             add_queries = 1
         diff = ch.zeros(b_sz, dim)
