@@ -73,7 +73,7 @@ class SimpleAttack(BlackBoxAttack):
         # replace only those that have greater right loss and was not replaced
         # in the left attempt
         replace_flag = ch.tensor((right_loss > self.best_loss).astype(np.float32)).unsqueeze(1) * (1 - replace_flag)
-        self.best_loss = replace_flag * left_loss + (1 - replace_flag) * self.best_loss
+        self.best_loss = replace_flag * ch.from_numpy(left_loss).unsqueeze(1) + (1 - replace_flag) * ch.from_numpy(self.best_loss).unsqueeze(1)
         new_xs = replace_flag * right_xs + (1 - replace_flag) * new_xs
         # compute the cosine similarity
         cos_sims, ham_sims = metric_fct(xs_t.cpu().numpy(), (new_xs - xs_t).view(_shape[0], -1).cpu().numpy())
