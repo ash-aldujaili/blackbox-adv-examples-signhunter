@@ -6,13 +6,13 @@
   "dset_config": {},
   "_comment": "===== EVAL CONFIGURATION =====",
   "num_eval_examples": 1000,
-  "eval_batch_size": 10,
+  "eval_batch_size": 100,
   "_comment": "=====ADVERSARIAL EXAMPLES CONFIGURATION=====",
   "attack_name": "SimpleAttack",
   "attack_config": {
-    "epsilon": 12,
-    "p": "inf",
-    "delta": 2,
+    "epsilon": 127,
+    "p": "2",
+    "delta": 50,
     "max_loss_queries": 10000
   },
   "device": "/gpu:1"

@@ -9,12 +9,7 @@
   "attack_config": {
     "epsilon": 0.3,
     "p": "inf",
-    "lr": 0.03,
-    "fd_eta": 0.1,
-    "prior_lr": 0.001,
-    "prior_size": 8,
-    "data_size": 28,
-    "prior_exploration": 0.01,
+    "delta": 0.1,
     "max_loss_queries": 10000
   },
   "device": "/gpu:1"
