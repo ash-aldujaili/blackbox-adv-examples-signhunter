@@ -63,7 +63,7 @@ class SimpleAttack(BlackBoxAttack):
         # left attempt
         left_xs = lp_step(xs_t, diff.view_as(xs_t), self.delta, self.p)
         left_loss = loss_fct(left_xs.cpu().numpy())
-        replace_flag = (left_loss > self.best_loss).astype(np.float32)
+        replace_flag = ch.tensor(left_loss > self.best_loss).float().unsqueeze(1)
         print(replace_flag.shape)
         self.best_loss = replace_flag * left_loss + (1 - replace_flag) * self.best_loss
         new_xs = replace_flag * left_xs + (1. - replace_flag) * new_xs
@@ -72,7 +72,7 @@ class SimpleAttack(BlackBoxAttack):
         right_loss = loss_fct(right_xs.cpu().numpy())
         # replace only those that have greater right loss and was not replaced
         # in the left attempt
-        replace_flag = (right_loss > self.best_loss).astype(np.float32) * (1 - replace_flag)
+        replace_flag = ch.tensor(right_loss > self.best_loss).float().unsqueeze(1) * (1 - replace_flag)
         self.best_loss = replace_flag * left_loss + (1 - replace_flag) * self.best_loss
         new_xs = replace_flag * right_xs + (1 - replace_flag) * new_xs
         # compute the cosine similarity
