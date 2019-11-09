@@ -59,28 +59,29 @@ class SimpleAttack(BlackBoxAttack):
         # % if iterations are greater than dim
         idx = self.perm[:, self.i % dim]
         diff = diff.scatter(1, idx.unsqueeze(1), 1)
-        new_xs = xs_t.clone()
+        new_xs = xs_t.clone().view(b_sz,-1)
         # left attempt
         left_xs = lp_step(xs_t, diff.view_as(xs_t), self.delta, self.p)
         left_loss = loss_fct(left_xs.cpu().numpy())
         replace_flag = ch.tensor((left_loss > self.best_loss).astype(np.float32)).unsqueeze(1)
         #print(replace_flag.shape)
         self.best_loss = replace_flag.squeeze(1).cpu().numpy() * left_loss + (1 - replace_flag.squeeze(1).cpu().numpy()) * self.best_loss
-        new_xs = replace_flag * left_xs + (1. - replace_flag) * new_xs
+        new_xs = replace_flag * left_xs.view(b_sz,-1) + (1. - replace_flag) * new_xs
         # right attempt
         right_xs = lp_step(xs_t, diff.view_as(xs_t), - self.delta, self.p)
         right_loss = loss_fct(right_xs.cpu().numpy())
         # replace only those that have greater right loss and was not replaced
         # in the left attempt
         replace_flag = ch.tensor((right_loss > self.best_loss).astype(np.float32)).unsqueeze(1) * (1 - replace_flag)
+        #print(replace_flag.shape)
         self.best_loss = replace_flag.squeeze(1).cpu().numpy() * right_loss + (1 - replace_flag.squeeze(1).cpu().numpy()) * self.best_loss
-        new_xs = replace_flag * right_xs + (1 - replace_flag) * new_xs
+        new_xs = replace_flag * right_xs.view(b_sz,-1) + (1 - replace_flag) * new_xs
         # compute the cosine similarity
-        cos_sims, ham_sims = metric_fct(xs_t.cpu().numpy(), (new_xs - xs_t).view(_shape[0], -1).cpu().numpy())
+        cos_sims, ham_sims = metric_fct(xs_t.cpu().numpy(), (new_xs - xs_t.view(b_sz, -1)).cpu().numpy())
         self.i += 1
         # number of queries: add_queries (if first iteration to init best_loss) + left queries + (right queries if any)
-        num_queries = add_queries + np.ones(b_sz) + np.ones(b_sz) * replace_flag.cpu().numpy()
-        return new_xs, num_queries, cos_sims, ham_sims
+        num_queries = add_queries + np.ones(b_sz) + np.ones(b_sz) * replace_flag.squeeze(1).cpu().numpy()
+        return new_xs.view_as(xs_t), num_queries, cos_sims, ham_sims
 
     def _config(self):
         return {
