@@ -166,7 +166,6 @@ def plt_from_h5tbl(h5_filenames):
     other_agg_num_loss_queries = 0
     total_sets = 0.  # to compute the aggregated perofrmance
     for (dset, p), _dp_df in df.groupby(['dataset', 'p']):
-        if p == '2': continue
         total_sets += 1.
         tbl_df = pd.DataFrame()
         loss_fig, loss_ax = plt.subplots()
@@ -183,7 +182,7 @@ def plt_from_h5tbl(h5_filenames):
             # replace the name
             attack_name = attack.replace('Attack', '').replace('Sign', 'SignHunter').replace('Bandit',
                                                                                              'Bandits$_{TD}$').replace(
-                'ZOSignHunter', 'ZOSign')
+                'ZOSignHunter', 'ZOSign').replace('Simple', 'SIMBA')
             attack_name = bf(r"""\texttt{%s}""" % attack_name)
             # temp df to store for each batch the latest record (latest in terms of iteration)
             _df = _at_df.groupby('batch_id').apply(lambda _: _[_.iteration == _.iteration.max()])
@@ -239,6 +238,7 @@ def plt_from_h5tbl(h5_filenames):
                 since for some methods the queries used vary from one iteration to the other
                 """
                 _['cum_loss_queries'] = _.num_loss_queries_per_iteration.cumsum()
+                _['cum_crit_queries'] = _.num_crit_queries_per_iteration.cumsum()
                 return _
 
             _std_df = _at_df.groupby(['batch_id']).apply(
@@ -256,7 +256,12 @@ def plt_from_h5tbl(h5_filenames):
             total_success = _at_df.groupby('batch_id').apply(
                 lambda _: _[_.iteration == _.iteration.max()]['total_successes']).sum()
 
+            total_crit_query = std_df.groupby('batch_id').apply(
+                lambda _: _.cum_crit_queries * (
+                    _.total_successes.diff().fillna(_.total_successes))).sum()
+
             avg_loss_queries = total_loss_query / total_success
+            avg_crit_queries = total_crit_query / total_success
             std_loss_queries = np.sqrt(total_loss_query_squared / (total_success - 1) -
                                        total_success * avg_loss_queries ** 2 / (total_success - 1))
 
@@ -272,8 +277,8 @@ def plt_from_h5tbl(h5_filenames):
                 'attack': attack_name,
                 'p': p,
                 'failure_rate': 1 - scs_rate[-1],
-                'avg. loss': avg_scs_loss_queries[-1],
-                'std. loss': std_loss_queries
+                'avg. loss': avg_scs_loss_queries[-1] + avg_crit_queries,
+                #'std. loss': std_loss_queries
             }]), ignore_index=True)
 
             if attack == 'SignAttack':
@@ -292,6 +297,7 @@ def plt_from_h5tbl(h5_filenames):
 
         print("Data set: {}".format(dset))
         print(tbl_df.set_index('attack'))
+
 
         # if you 'd like to show all the legends here
         ham_ax.legend()
@@ -402,26 +408,37 @@ if __name__ == '__main__':
     #                 ])
     #
     # # plot all
-    # plt_from_h5tbl([
-    #     '../../data/blackbox_attack_exp/mnist_naive_tbl.h5',
-    #     '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
-    #     '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-    #     '../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+    plt_from_h5tbl([
+         #'../../data/blackbox_attack_exp/mnist_naive_tbl.h5',
+         #'../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
+        '../../data/blackbox_attack_exp/cifar_simple_attack_tbl.h5',
+         '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
+        #'../../data/blackbox_attack_exp/cifar_simulated_l2_nes_bandit__linf_2.291_tbl.h5',
+         '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
+        #'../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
+         #'../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
 
-    #     # '../../data/blackbox_attack_exp/imagenet_naive_tbl.h5',
-    #     # '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
-    #     # '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5',
-    # ])
+    #     '../../data/blackbox_attack_exp/shc_mnist_cifar_linf_tbl.h5',
+    #     '../../data/blackbox_attack_exp/shc_mnist_cifar_l2_tbl.h5'
+       # '../../data/blackbox_attack_exp/imagenet_naive_tbl.h5',
+       # '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
+       # '../../data/blackbox_attack_exp/imagenet_rand_tbl.h5',
+        #'../../data/blackbox_attack_exp/shc_imagenet_linf_tbl.h5',
+        #'../../data/blackbox_attack_exp/shc_imagenet_l2_tbl.h5',
+
+     ])
 
 
 
     plt_from_h5tbl([
-        '../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
-        '../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
-        '../../data/blackbox_attack_exp/cifar10_linf_sign_tbl.h5',
-        '../../data/blackbox_attack_exp/cifar10_linf_sota_tbl.h5',
-        '../../data/blackbox_attack_exp/imagenet_linf_sota_tbl.h5',
-        '../../data/blackbox_attack_exp/imagenet_linf_sign_tbl.h5',
+        #'../../data/blackbox_attack_exp/mnist_sota_tbl.h5',
+        #'../../data/blackbox_attack_exp/mnist_sign_tbl.h5',
+        #'../../data/blackbox_attack_exp/mnist_cifar_rand_tbl.h5',
+        #'../../data/blackbox_attack_exp/imagenet_rand_tbl.h5',
+        # '../../data/blackbox_attack_exp/cifar10_l2_sign_tbl.h5',
+        # '../../data/blackbox_attack_exp/cifar10_l2_sota_tbl.h5',
+        # '../../data/blackbox_attack_exp/imagenet_l2_sota_tbl.h5',
+        # '../../data/blackbox_attack_exp/imagenet_l2_sign_tbl.h5',
         ])
 
     # # plot adv cone plots
