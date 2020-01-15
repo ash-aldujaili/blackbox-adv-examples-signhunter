@@ -1,6 +1,6 @@
 # Flipping Sign Bits is All You Need to Craft Black-Box Adversarial Examples
 
-A repository for the query-efficient black-box attack, SignHunter: **[There are No Bit Parts for Sign Bits in Black-Box Attacks](https://arxiv.org/abs/1902.06894v1)** by Abdullah Al-Dujaili and Una-May O'Reilly, 2019
+A repository for the query-efficient black-box attack, SignHunter: **[Sign Bits Are All You Need for Black-Box Attacks](https://openreview.net/forum?id=SygW0TEFwH)** by Abdullah Al-Dujaili and Una-May O'Reilly, ICLR 2019
 
 
 **Highlights of the attack**:
@@ -23,9 +23,7 @@ Also, the repository has two branches:
 - `master`: contains the code for the main experiments in the paper.
 - `chanllenges`: for experiments of Section 6. 
 
-### More Resources:
 
-- Coming Soon
 
 
 ### Citation
@@ -33,11 +31,13 @@ Also, the repository has two branches:
 If you make use of this code and you'd like to cite us, please consider the following:
 
 ```
-@article{al2019there,
-  title={There are No Bit Parts for Sign Bits in Black-Box Attacks},
-  author={Al-Dujaili, Abdullah and O'Reilly, Una-May},
-  journal={arXiv preprint arXiv:1902.06894},
-  year={2019}
+@inproceedings{
+al-dujaili2020sign,
+title={Sign Bits Are All You Need for Black-Box Attacks},
+author={Abdullah Al-Dujaili and Una-May O'Reilly},
+booktitle={International Conference on Learning Representations},
+year={2020},
+url={https://openreview.net/forum?id=SygW0TEFwH}
 }
 ```
 
